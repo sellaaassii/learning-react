@@ -93,10 +93,17 @@ class Game extends React.Component {
         <div className="game-board">
           <Board
           squares={current.squares}
-          onClick={(i) => this.handleClick(i)}/>
+          onClick={(i) =>
+
+            this.handleClick(i)}/>
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <button
+          className="poop"
+          onClick={() => restart()}>
+            {"reset"}
+          </button>
         </div>
       </div>
     );
@@ -105,10 +112,16 @@ class Game extends React.Component {
 
 // ========================================
 
-ReactDOM.render(
-  <Game />,
-  document.getElementById('root')
-);
+restart();
+
+function restart() {
+  ReactDOM.unmountComponentAtNode(document.getElementById('root'));
+  ReactDOM.render(
+    <Game />,
+    document.getElementById('root')
+  );
+}
+
 
 function calculateWinner(squares) {
   const lines = [
