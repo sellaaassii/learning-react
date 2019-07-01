@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+//import Button from 'react-bootstrap/Button'
+//import ButtonNice from 'react-button-nice';
 
 function Square(props) {
     return (
@@ -93,17 +95,17 @@ class Game extends React.Component {
         <div className="game-board">
           <Board
           squares={current.squares}
-          onClick={(i) =>
-
-            this.handleClick(i)}/>
+          onClick={(i) => this.handleClick(i)}/>
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <button
-          className="poop"
-          onClick={() => restart()}>
-            {"reset"}
-          </button>
+        </div>
+        <div className="reset-button">
+        <button
+        class="reset"
+        onClick={() => restartGame()}>
+         {"reset"}
+        </button>
         </div>
       </div>
     );
@@ -112,9 +114,9 @@ class Game extends React.Component {
 
 // ========================================
 
-restart();
+restartGame();
 
-function restart() {
+function restartGame() {
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
   ReactDOM.render(
     <Game />,

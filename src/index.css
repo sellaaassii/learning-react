@@ -1,5 +1,5 @@
 body {
-  font: 14px "Century Gothic", Futura, sans-serif;
+  font: 20px "Century Gothic", Futura, sans-serif;
   margin: 20px;
 }
 
@@ -47,4 +47,17 @@ ol, ul {
 
 .game-info {
   margin-left: 20px;
+}
+
+.reset-button {
+  margin-left: 20px;
+}
+
+.reset {
+  background-color: #d9534f;
+  font-size: 17px;
+  font-weight: bold;
+  color: white;
+  border-radius: 7px;
+  border: none;
 }
