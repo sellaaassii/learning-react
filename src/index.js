@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import Center from 'react-center';
 //import Button from 'react-bootstrap/Button'
 //import ButtonNice from 'react-button-nice';
 
@@ -91,23 +92,25 @@ class Game extends React.Component {
     }
 
     return (
+      <Center>
+      <div className="game-info">
+        <div>{status}</div>
+      </div>
+      <div className="reset-button">
+      <button
+      class="reset"
+      onClick={() => restartGame()}>
+       {"Restart"}
+      </button>
+      </div>
       <div className="game">
         <div className="game-board">
           <Board
           squares={current.squares}
           onClick={(i) => this.handleClick(i)}/>
         </div>
-        <div className="game-info">
-          <div>{status}</div>
-        </div>
-        <div className="reset-button">
-        <button
-        class="reset"
-        onClick={() => restartGame()}>
-         {"reset"}
-        </button>
-        </div>
       </div>
+      </Center>
     );
   }
 }
