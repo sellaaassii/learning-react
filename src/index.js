@@ -2,8 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Center from 'react-center';
-//import Button from 'react-bootstrap/Button'
-//import ButtonNice from 'react-button-nice';
+
 
 function Square(props) {
     return (
