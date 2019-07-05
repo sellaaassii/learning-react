@@ -64,8 +64,19 @@ ol, ul {
   margin-left: 20px;
 }
 
-.reset {
+.main {
   background-color: #d9534f;
+  font-size: 30px;
+  font-weight: bold;
+  color: white;
+  border-radius: 7px;
+  border: none;
+  text-align: center;
+  padding: 12px
+}
+
+.reset {
+  background-color: #428bca;
   font-size: 30px;
   font-weight: bold;
   color: white;

@@ -15,6 +15,26 @@ function Square(props) {
     );
 }
 
+function onePlayer() {
+  startGame();
+}
+
+function twoPlayer() {
+
+}
+
+class Begin extends React.Component {
+
+  render() {
+    return (
+      <div>
+        <button className="Oneplayer" onClick={() => onePlayer()}>One player</button>
+        <button className="Twoplayer" onClick={() => twoPlayer()}>Two player</button>
+      </div>
+    );
+  }
+}
+
 class Board extends React.Component {
 
   renderSquare(i) {
@@ -91,16 +111,22 @@ class Game extends React.Component {
     }
 
     return (
+
       <Center>
+      <button
+      class="main"
+      onClick={() => chooseNumberOfPlayers()}>
+       {"Main menu"}
+      </button>
       <div className="game-info">
         <div>{status}</div>
       </div>
       <div className="reset-button">
-      <button
-      class="reset"
-      onClick={() => restartGame()}>
-       {"Restart"}
-      </button>
+        <button
+        class="reset"
+        onClick={() => startGame()}>
+         {"Restart"}
+        </button>
       </div>
       <div className="game">
         <div className="game-board">
@@ -116,12 +142,21 @@ class Game extends React.Component {
 
 // ========================================
 
-restartGame();
+//restartGame();
+chooseNumberOfPlayers();
 
-function restartGame() {
+function startGame() {
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
   ReactDOM.render(
     <Game />,
+    document.getElementById('root')
+  );
+}
+
+function chooseNumberOfPlayers() {
+  ReactDOM.unmountComponentAtNode(document.getElementById('root'));
+  ReactDOM.render(
+    <Begin />,
     document.getElementById('root')
   );
 }
