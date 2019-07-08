@@ -23,8 +23,6 @@ function chooseOnePlayerGame() {
   );
 }
 
-
-
 class ChooseNumberOfPlayers extends React.Component {
 
   render() {
@@ -42,8 +40,8 @@ class ChooseCharacter extends React.Component {
   render () {
     return (
       <div>
-        <button className="X" onClick={() => startOneP(true)}>{"X"}</button>
-        <button className="O" onClick={() => startOneP(false)}>{"O"}</button>
+        <button className="X" onClick={() => startOnePlayerGame(true)}>{"X"}</button>
+        <button className="O" onClick={() => startOnePlayerGame(false)}>{"O"}</button>
       </div>
     );
   }
@@ -81,80 +79,6 @@ class Board extends React.Component {
   }
 }
 
-class Game extends React.Component {
-  constructor(props) {
-      super(props);
-
-      this.state = {
-        history: [{
-          squares: Array(9).fill(null),
-        }],
-        xIsNext: true,
-      };
-    }
-
-    handleClick(i) {
-      const history = this.state.history;
-      const current = history[history.length - 1];
-      const squares = current.squares.slice();
-
-      if (calculateWinner(squares) || squares[i]) {
-        return;
-      }
-      console.log("yayaya " + this.state.twoPlayer)
-      squares[i] = this.state.xIsNext? 'X': 'O';
-      this.setState({
-        history: history.concat([{
-          squares: squares,
-        }]),
-        xIsNext: !this.state.xIsNext,
-      });
-    }
-
-  render() {
-    const history = this.state.history;
-    const current = history[history.length - 1];
-    const winner = calculateWinner(current.squares);
-
-    let status;
-    if (winner) {
-      if(winner === 'T')
-        status = 'It\'s a tie!';
-      else
-        status = 'Winner: ' + winner;
-    } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    }
-
-    return (
-
-      <Center>
-      <button
-      class="main"
-      onClick={() => chooseNumberOfPlayers()}>
-       {"Main menu"}
-      </button>
-      <div className="game-info">
-        <div>{status}</div>
-      </div>
-      <div className="reset-button">
-        <button
-        class="reset"
-        onClick={() => startTwoPlayerGame()}>
-         {"Restart"}
-        </button>
-      </div>
-      <div className="game">
-        <div className="game-board">
-          <Board
-          squares={current.squares}
-          onClick={(i) => this.handleClick(i)}/>
-        </div>
-      </div>
-      </Center>
-    );
-  }
-}
 //============================================================================================================================
 class OnePGame extends React.Component {
   constructor(props) {
@@ -167,19 +91,18 @@ class OnePGame extends React.Component {
         isTwoPlayerGame: (this.props.humanPlayerIsX === undefined ? true: false),
         humanPlayer: (this.props.humanPlayerIsX === undefined ? null: (this.props.humanPlayerIsX ? 'X': 'O')),
         computer: (this.props.humanPlayerIsX === undefined ? null: (this.props.humanPlayerIsX ? 'O': 'X')),
-        status: (this.props.humanPlayerIsX === undefined ? "Next player: X" : (this.props.humanPlayerIsX ? 'Your turn': 'Computer is computing')),
+        status: (this.props.humanPlayerIsX === undefined ? "Next player: X" : (this.props.humanPlayerIsX ? 'Your turn': 'Computer\'s turn')),
       };
     }
 
     handleClick(i) {
-      console.log("handleClick")
       const history = this.state.history;
       const current = history[history.length - 1];
       const squares = current.squares.slice();
 
-        if (calculateWinner(squares) || squares[i]) {
-          return;
-        }
+      if (calculateWinner(squares) || squares[i])
+        return;
+
 
         var status = this.state.status;
 
@@ -227,7 +150,6 @@ class OnePGame extends React.Component {
           xIsNext: !this.state.xIsNext,
           status: 'Your turn',
         });
-
       }
     }
 
@@ -240,12 +162,10 @@ class OnePGame extends React.Component {
       if((this.state.xIsNext && this.state.computer === 'X') ||
         (!this.state.xIsNext && this.state.computer === 'O')) {
 
-
         var index = minimax(squares, this.state.computer).index;
         squares[index] = this.state.computer;
 
         var winner = calculateWinner(squares);
-
 
         if (winner) {
           if(winner === 'T')
@@ -268,7 +188,7 @@ class OnePGame extends React.Component {
       if(this.state.isTwoPlayerGame){
         startTwoPlayerGame();
       } else {
-        startOneP((this.state.humanPlayer === 'X' ? true: false))
+        startOnePlayerGame((this.state.humanPlayer === 'X' ? true: false))
       }
     }
 
@@ -279,7 +199,6 @@ class OnePGame extends React.Component {
     const squares = current.squares.slice();
 
     return (
-
       <Center>
       <button
       className="main"
@@ -320,10 +239,10 @@ function startTwoPlayerGame() {
   );
 }
 
-function startOneP(humanPlayerIsX) {
+function startOnePlayerGame(isHumanPlayerX) {
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
   ReactDOM.render(
-    <OnePGame humanPlayerIsX={humanPlayerIsX} />,
+    <OnePGame humanPlayerIsX={isHumanPlayerX} />,
     document.getElementById('root')
   );
 }
@@ -335,7 +254,6 @@ function chooseNumberOfPlayers() {
     document.getElementById('root')
   );
 }
-
 
 function calculateWinner(squares) {
   const lines = [
