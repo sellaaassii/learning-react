@@ -16,11 +16,15 @@ function Square(props) {
 }
 
 function onePlayer() {
-  startGame();
+  ReactDOM.unmountComponentAtNode(document.getElementById('root'));
+  ReactDOM.render(
+    <ChooseCharacter />,
+    document.getElementById('root')
+  );
 }
 
 function twoPlayer() {
-
+  startGame();
 }
 
 class Begin extends React.Component {
@@ -28,8 +32,20 @@ class Begin extends React.Component {
   render() {
     return (
       <div>
-        <button className="Oneplayer" onClick={() => onePlayer()}>One player</button>
-        <button className="Twoplayer" onClick={() => twoPlayer()}>Two player</button>
+        <button className="Oneplayer" onClick={() => onePlayer()}>{"One player"}</button>
+        <button className="Twoplayer" onClick={() => twoPlayer()}>{"Two player"}</button>
+      </div>
+    );
+  }
+}
+
+class ChooseCharacter extends React.Component {
+
+  render () {
+    return (
+      <div>
+        <button className="X" onClick={() => startOneP(true)}>{"X"}</button>
+        <button className="O" onClick={() => startOneP(false)}>{"O"}</button>
       </div>
     );
   }
@@ -70,12 +86,15 @@ class Board extends React.Component {
 class Game extends React.Component {
   constructor(props) {
       super(props);
+
       this.state = {
         history: [{
           squares: Array(9).fill(null),
         }],
         xIsNext: true,
       };
+
+
     }
 
     handleClick(i) {
@@ -139,16 +158,145 @@ class Game extends React.Component {
     );
   }
 }
+//============================================================================================================================
+class OnePGame extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+        history: [{
+          squares: Array(9).fill(null),
+        }],
+        xIsNext: true,
+        humanPlayer: this.props.humanPlayerIsX ? 'X': 'O',
+        computer: this.props.humanPlayerIsX ? 'O': 'X',
+        status: this.props.humanPlayerIsX? 'Your turn': 'Computer is computing',
+      };
+    }
+
+    handleClick(i) {
+      const history = this.state.history;
+      const current = history[history.length - 1];
+      const squares = current.squares.slice();
+
+        if (calculateWinner(squares) || squares[i]) {
+          return;
+        }
+
+        squares[i] = this.state.humanPlayer;
+        var status = this.state.status;
+
+        this.setState({
+          history: history.concat([{
+            squares: squares,
+          }]),
+          xIsNext: !this.state.xIsNext,
+          status: status,
+        });
+    }
+
+    componentDidMount() {
+      if (this.state.computer === 'X') {
+        const history = this.state.history;
+        const current = history[history.length - 1];
+        const squares = current.squares.slice();
+
+        var index = minimax(squares, this.state.computer).index;
+        squares[index] = this.state.computer;
+
+        this.setState({
+          history: history.concat([{
+            squares: squares,
+          }]),
+          xIsNext: !this.state.xIsNext,
+          status: 'Your turn',
+        });
+
+      }
+    }
+
+    componentDidUpdate() {
+      if((this.state.xIsNext && this.state.computer === 'X') ||
+        (!this.state.xIsNext && this.state.computer === 'O')) {
+        const history = this.state.history;
+        const current = history[history.length - 1];
+        const squares = current.squares.slice();
+
+
+        var index = minimax(squares, this.state.computer).index;
+        squares[index] = this.state.computer;
+
+        var winner = calculateWinner(squares);
+
+        console.log("Winner " + winner)
+        let status = "Your turn ";
+        if (winner) {
+          if(winner === 'T')
+            status = 'It\'s a tie!';
+          else
+            status = (winner === this.state.computer? "Computer wins!" : " You won!");
+        }
+
+          this.setState({
+            history: history.concat([{
+              squares: squares,
+            }]),
+            xIsNext: !this.state.xIsNext,
+            status: status,
+          });
+      }
+    }
+
+  render() {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+
+    return (
+
+      <Center>
+      <button
+      className="main"
+      onClick={() => chooseNumberOfPlayers()}>
+       {"Main menu"}
+      </button>
+      <div className="game-info">
+        <div>{this.state.status}</div>
+      </div>
+      <div className="reset-button">
+        <button
+        className="reset"
+        onClick={() => startOneP((this.state.humanPlayer === 'X' ? true: false))}>
+         {"Restart"}
+        </button>
+      </div>
+      <div className="game">
+        <div className="game-board">
+          <Board
+          squares={squares}
+          onClick={(i) => this.handleClick(i)}/>
+        </div>
+      </div>
+      </Center>
+    );
+  }
+}
 
 // ========================================
 
-//restartGame();
 chooseNumberOfPlayers();
 
 function startGame() {
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
   ReactDOM.render(
     <Game />,
+    document.getElementById('root')
+  );
+}
+
+function startOneP(humanPlayerIsX) {
+  ReactDOM.unmountComponentAtNode(document.getElementById('root'));
+  ReactDOM.render(
+    <OnePGame humanPlayerIsX={humanPlayerIsX} />,
     document.getElementById('root')
   );
 }
@@ -196,4 +344,71 @@ function calculateWinner(squares) {
     return 'T';
 
   return null;
+}
+
+function getRemainingSpotsOnBoard(leBoard) {
+  var emptyIndexes = [];
+
+  for(var i = 0; i < leBoard.length; i++) {
+    if(leBoard[i] === null)
+      emptyIndexes.push(i);
+  }
+  return emptyIndexes;
+}
+
+var minimax = function(board, player){
+  var emptySpotsOnBoard = getRemainingSpotsOnBoard(board);
+
+  if(calculateWinner(board) === 'O'){
+    return {score: -10};
+  }
+  else if(calculateWinner(board) === 'X'){
+    return {score: 10};
+  }
+  else if (emptySpotsOnBoard.length === 0){
+    return {score: 0};
+  }
+
+  var moves = [];
+
+  for(var i = 0; i < emptySpotsOnBoard.length; i++) {
+    var move = {};
+    move.index = emptySpotsOnBoard[i];
+
+    board[emptySpotsOnBoard[i]] = player;
+
+    if(player === 'X') { //computer is X
+      var result = minimax(board, 'O');
+      move.score = result.score;
+    }
+    else {
+      var result = minimax(board, 'X');
+      move.score = result.score;
+    }
+
+    board[emptySpotsOnBoard[i]] = null;
+    moves.push(move);
+  }
+
+  var best_move;
+  if(player === 'X'){
+    var best_score = -1000000;
+    for(var j = 0; j < moves.length; j++){
+      if(moves[j].score > best_score){
+        best_score = moves[j].score;
+        best_move  = j;
+      }
+    }
+  }
+  else {
+    var best_score = 1000000;
+    for(var j = 0; j < moves.length; j++){
+      if(moves[j].score < best_score){
+        best_score = moves[j].score;
+        best_move  = j;
+      }
+    }
+  }
+
+  return moves[best_move];
 }
