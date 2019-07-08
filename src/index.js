@@ -79,8 +79,7 @@ class Board extends React.Component {
   }
 }
 
-//============================================================================================================================
-class OnePGame extends React.Component {
+class Game extends React.Component {
   constructor(props) {
       super(props);
       this.state = {
@@ -89,56 +88,63 @@ class OnePGame extends React.Component {
         }],
         xIsNext: true,
         isTwoPlayerGame: (this.props.humanPlayerIsX === undefined ? true: false),
-        humanPlayer: (this.props.humanPlayerIsX === undefined ? null: (this.props.humanPlayerIsX ? 'X': 'O')),
-        computer: (this.props.humanPlayerIsX === undefined ? null: (this.props.humanPlayerIsX ? 'O': 'X')),
-        status: (this.props.humanPlayerIsX === undefined ? "Next player: X" : (this.props.humanPlayerIsX ? 'Your turn': 'Computer\'s turn')),
+        humanPlayer:     (this.props.humanPlayerIsX === undefined ? null : (this.props.humanPlayerIsX ? 'X': 'O')),
+        computer:        (this.props.humanPlayerIsX === undefined ? null : (this.props.humanPlayerIsX ? 'O': 'X')),
+        status:          (this.props.humanPlayerIsX === undefined ? "Next player: X" : (this.props.humanPlayerIsX ? 'Your turn': 'Computer\'s turn')),
       };
     }
 
-    handleClick(i) {
+    getHistoryAndSquares() {
       const history = this.state.history;
       const current = history[history.length - 1];
       const squares = current.squares.slice();
 
+      return [history, squares];
+    }
+
+    handleClick(i) {
+      var historyAndSquares = this.getHistoryAndSquares();
+      const history = historyAndSquares[0];
+      const squares = historyAndSquares[1];
+
       if (calculateWinner(squares) || squares[i])
         return;
 
+      var status = this.state.status;
 
-        var status = this.state.status;
+      //if it is a two player game, check for winner and change status.
+      if (this.state.isTwoPlayerGame) {
+        squares[i] = this.state.xIsNext ? 'X': 'O';
+        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
-        if (this.state.isTwoPlayerGame) {
-          squares[i] = this.state.xIsNext? 'X': 'O';
-          status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+        var winner = calculateWinner(squares);
 
-          var winner = calculateWinner(squares);
-
-          if(winner) {
-            if(winner === 'T')
-              status = 'It\'s a tie!';
-            else
-              status = 'Winner: ' + winner;
-          }
+        if (winner) {
+          if (winner === 'T')
+            status = 'It\'s a tie!';
+          else
+            status = 'Winner: ' + winner;
         }
-        else {
-          squares[i] = this.state.humanPlayer;
-        }
+      }
+      else {
+        squares[i] = this.state.humanPlayer;
+      }
 
-
-        this.setState({
-          history: history.concat([{
-            squares: squares,
-          }]),
-          xIsNext: !this.state.xIsNext,
-          status: status,
-        });
+      this.setState({
+        history: history.concat([{
+          squares: squares,
+        }]),
+        xIsNext: !this.state.xIsNext,
+        status: status,
+      });
     }
 
     componentDidMount() {
-      console.log("componentDidMount")
+      //if it is one player mode, then start the game with the computer's choice on the board
       if (this.state.computer === 'X') {
-        const history = this.state.history;
-        const current = history[history.length - 1];
-        const squares = current.squares.slice();
+        var historyAndSquares = this.getHistoryAndSquares();
+        const history = historyAndSquares[0];
+        const squares = historyAndSquares[1];
 
         var index = minimax(squares, this.state.computer).index;
         squares[index] = this.state.computer;
@@ -154,13 +160,14 @@ class OnePGame extends React.Component {
     }
 
     componentDidUpdate() {
-      const history = this.state.history;
-      const current = history[history.length - 1];
-      const squares = current.squares.slice();
+      var historyAndSquares = this.getHistoryAndSquares();
+      const history = historyAndSquares[0];
+      const squares = historyAndSquares[1];
 
       let status = "Your turn ";
-      if((this.state.xIsNext && this.state.computer === 'X') ||
-        (!this.state.xIsNext && this.state.computer === 'O')) {
+      //if it is a one player game, then calculate the computer's choice and play
+      if ((this.state.xIsNext && this.state.computer === 'X') ||
+         (!this.state.xIsNext && this.state.computer === 'O')) {
 
         var index = minimax(squares, this.state.computer).index;
         squares[index] = this.state.computer;
@@ -168,35 +175,32 @@ class OnePGame extends React.Component {
         var winner = calculateWinner(squares);
 
         if (winner) {
-          if(winner === 'T')
+          if (winner === 'T')
             status = 'It\'s a tie!';
           else
-            status = (winner === this.state.computer? "Computer wins!" : " You won!");
+            status = (winner === this.state.computer ? "Computer wins!" : " You won!");
         }
 
-          this.setState({
-            history: history.concat([{
-              squares: squares,
-            }]),
-            xIsNext: !this.state.xIsNext,
-            status: status,
-          });
+        this.setState({
+          history: history.concat([{
+            squares: squares,
+          }]),
+          xIsNext: !this.state.xIsNext,
+          status: status,
+        });
       }
     }
 
     handleRestartGame() {
-      if(this.state.isTwoPlayerGame){
+      if (this.state.isTwoPlayerGame)
         startTwoPlayerGame();
-      } else {
-        startOnePlayerGame((this.state.humanPlayer === 'X' ? true: false))
-      }
+      else
+        startOnePlayerGame((this.state.humanPlayer === 'X' ? true: false));
     }
 
   render() {
-    console.log("render")
-    const history = this.state.history;
-    const current = history[history.length - 1];
-    const squares = current.squares.slice();
+    var historyAndSquares = this.getHistoryAndSquares();
+    const squares = historyAndSquares[1];
 
     return (
       <Center>
@@ -227,14 +231,12 @@ class OnePGame extends React.Component {
   }
 }
 
-// ========================================
-
 chooseNumberOfPlayers();
 
 function startTwoPlayerGame() {
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
   ReactDOM.render(
-    <OnePGame />,
+    <Game />,
     document.getElementById('root')
   );
 }
@@ -242,7 +244,7 @@ function startTwoPlayerGame() {
 function startOnePlayerGame(isHumanPlayerX) {
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
   ReactDOM.render(
-    <OnePGame humanPlayerIsX={isHumanPlayerX} />,
+    <Game humanPlayerIsX={isHumanPlayerX} />,
     document.getElementById('root')
   );
 }
@@ -256,6 +258,7 @@ function chooseNumberOfPlayers() {
 }
 
 function calculateWinner(squares) {
+  //winning combinations
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -301,28 +304,30 @@ function getRemainingSpotsOnBoard(leBoard) {
   return emptyIndexes;
 }
 
-var minimax = function(board, player){
+var minimax = function(board, player) {
+  //get all the spots on the board that have not been played in
   var emptySpotsOnBoard = getRemainingSpotsOnBoard(board);
 
-  if(calculateWinner(board) === 'O'){
+//check to see if there are game ending states of the game(i.e. win, lose, tie)
+  if (calculateWinner(board) === 'O') {
     return {score: -10};
   }
-  else if(calculateWinner(board) === 'X'){
+  else if (calculateWinner(board) === 'X') {
     return {score: 10};
   }
-  else if (emptySpotsOnBoard.length === 0){
+  else if (emptySpotsOnBoard.length === 0) {
     return {score: 0};
   }
 
   var moves = [];
 
-  for(var i = 0; i < emptySpotsOnBoard.length; i++) {
+  for (var i = 0; i < emptySpotsOnBoard.length; i++) {
     var move = {};
     move.index = emptySpotsOnBoard[i];
 
     board[emptySpotsOnBoard[i]] = player;
 
-    if(player === 'X') { //computer is X
+    if (player === 'X') { //computer is X
       var result = minimax(board, 'O');
       move.score = result.score;
     }
@@ -335,25 +340,27 @@ var minimax = function(board, player){
     moves.push(move);
   }
 
-  var best_move;
-  if(player === 'X'){
-    var best_score = -1000000;
-    for(var j = 0; j < moves.length; j++){
-      if(moves[j].score > best_score){
-        best_score = moves[j].score;
-        best_move  = j;
+//when it is the computer's turn, loop over all the moves and choose the one with the maximum score
+  var bestMove;
+  if (player === 'X') {
+    var bestScore = -1000000;
+    for (var j = 0; j < moves.length; j++) {
+      if (moves[j].score > bestScore) {
+        bestScore = moves[j].score;
+        bestMove  = j;
       }
     }
   }
   else {
-    var best_score = 1000000;
-    for(var j = 0; j < moves.length; j++){
-      if(moves[j].score < best_score){
-        best_score = moves[j].score;
-        best_move  = j;
+    //when it is the human players turn, loop over all the moves and choose the one with the minimum score
+    var bestScore = 1000000;
+    for (var j = 0; j < moves.length; j++) {
+      if (moves[j].score < bestScore) {
+        bestScore = moves[j].score;
+        bestMove  = j;
       }
     }
   }
 
-  return moves[best_move];
+  return moves[bestMove];
 }
