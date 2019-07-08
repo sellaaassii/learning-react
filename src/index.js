@@ -15,7 +15,7 @@ function Square(props) {
     );
 }
 
-function onePlayer() {
+function chooseOnePlayerGame() {
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
   ReactDOM.render(
     <ChooseCharacter />,
@@ -23,17 +23,15 @@ function onePlayer() {
   );
 }
 
-function twoPlayer() {
-  startGame();
-}
 
-class Begin extends React.Component {
+
+class ChooseNumberOfPlayers extends React.Component {
 
   render() {
     return (
       <div>
-        <button className="Oneplayer" onClick={() => onePlayer()}>{"One player"}</button>
-        <button className="Twoplayer" onClick={() => twoPlayer()}>{"Two player"}</button>
+        <button className="Oneplayer" onClick={() => chooseOnePlayerGame()}>{"One player"}</button>
+        <button className="Twoplayer" onClick={() => startTwoPlayerGame()}>{"Two player"}</button>
       </div>
     );
   }
@@ -93,8 +91,6 @@ class Game extends React.Component {
         }],
         xIsNext: true,
       };
-
-
     }
 
     handleClick(i) {
@@ -105,6 +101,7 @@ class Game extends React.Component {
       if (calculateWinner(squares) || squares[i]) {
         return;
       }
+      console.log("yayaya " + this.state.twoPlayer)
       squares[i] = this.state.xIsNext? 'X': 'O';
       this.setState({
         history: history.concat([{
@@ -143,7 +140,7 @@ class Game extends React.Component {
       <div className="reset-button">
         <button
         class="reset"
-        onClick={() => startGame()}>
+        onClick={() => startTwoPlayerGame()}>
          {"Restart"}
         </button>
       </div>
@@ -167,13 +164,15 @@ class OnePGame extends React.Component {
           squares: Array(9).fill(null),
         }],
         xIsNext: true,
-        humanPlayer: this.props.humanPlayerIsX ? 'X': 'O',
-        computer: this.props.humanPlayerIsX ? 'O': 'X',
-        status: this.props.humanPlayerIsX? 'Your turn': 'Computer is computing',
+        isTwoPlayerGame: (this.props.humanPlayerIsX === undefined ? true: false),
+        humanPlayer: (this.props.humanPlayerIsX === undefined ? null: (this.props.humanPlayerIsX ? 'X': 'O')),
+        computer: (this.props.humanPlayerIsX === undefined ? null: (this.props.humanPlayerIsX ? 'O': 'X')),
+        status: (this.props.humanPlayerIsX === undefined ? "Next player: X" : (this.props.humanPlayerIsX ? 'Your turn': 'Computer is computing')),
       };
     }
 
     handleClick(i) {
+      console.log("handleClick")
       const history = this.state.history;
       const current = history[history.length - 1];
       const squares = current.squares.slice();
@@ -182,8 +181,25 @@ class OnePGame extends React.Component {
           return;
         }
 
-        squares[i] = this.state.humanPlayer;
         var status = this.state.status;
+
+        if (this.state.isTwoPlayerGame) {
+          squares[i] = this.state.xIsNext? 'X': 'O';
+          status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+
+          var winner = calculateWinner(squares);
+
+          if(winner) {
+            if(winner === 'T')
+              status = 'It\'s a tie!';
+            else
+              status = 'Winner: ' + winner;
+          }
+        }
+        else {
+          squares[i] = this.state.humanPlayer;
+        }
+
 
         this.setState({
           history: history.concat([{
@@ -195,6 +211,7 @@ class OnePGame extends React.Component {
     }
 
     componentDidMount() {
+      console.log("componentDidMount")
       if (this.state.computer === 'X') {
         const history = this.state.history;
         const current = history[history.length - 1];
@@ -215,11 +232,13 @@ class OnePGame extends React.Component {
     }
 
     componentDidUpdate() {
+      const history = this.state.history;
+      const current = history[history.length - 1];
+      const squares = current.squares.slice();
+
+      let status = "Your turn ";
       if((this.state.xIsNext && this.state.computer === 'X') ||
         (!this.state.xIsNext && this.state.computer === 'O')) {
-        const history = this.state.history;
-        const current = history[history.length - 1];
-        const squares = current.squares.slice();
 
 
         var index = minimax(squares, this.state.computer).index;
@@ -227,8 +246,7 @@ class OnePGame extends React.Component {
 
         var winner = calculateWinner(squares);
 
-        console.log("Winner " + winner)
-        let status = "Your turn ";
+
         if (winner) {
           if(winner === 'T')
             status = 'It\'s a tie!';
@@ -246,7 +264,16 @@ class OnePGame extends React.Component {
       }
     }
 
+    handleRestartGame() {
+      if(this.state.isTwoPlayerGame){
+        startTwoPlayerGame();
+      } else {
+        startOneP((this.state.humanPlayer === 'X' ? true: false))
+      }
+    }
+
   render() {
+    console.log("render")
     const history = this.state.history;
     const current = history[history.length - 1];
     const squares = current.squares.slice();
@@ -265,7 +292,7 @@ class OnePGame extends React.Component {
       <div className="reset-button">
         <button
         className="reset"
-        onClick={() => startOneP((this.state.humanPlayer === 'X' ? true: false))}>
+        onClick={() => this.handleRestartGame()}>
          {"Restart"}
         </button>
       </div>
@@ -285,10 +312,10 @@ class OnePGame extends React.Component {
 
 chooseNumberOfPlayers();
 
-function startGame() {
+function startTwoPlayerGame() {
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
   ReactDOM.render(
-    <Game />,
+    <OnePGame />,
     document.getElementById('root')
   );
 }
@@ -304,7 +331,7 @@ function startOneP(humanPlayerIsX) {
 function chooseNumberOfPlayers() {
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
   ReactDOM.render(
-    <Begin />,
+    <ChooseNumberOfPlayers />,
     document.getElementById('root')
   );
 }
