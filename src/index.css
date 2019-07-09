@@ -19,11 +19,12 @@ ol, ul {
 }
 
 .square {
-  background: #fff;
-  border: 1px solid #999;
+  background: #607d8b;
+  border: 3px solid;
   float: left;
   font-size: 90px;
   font-weight: bold;
+  font: red;
   line-height: 145px;
   height: 145px;
   margin-right: -1px;

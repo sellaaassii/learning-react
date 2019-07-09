@@ -7,10 +7,7 @@ import Button from '@material-ui/core/Button';
 
 function Square(props) {
     return (
-      <button
-      className="square"
-      onClick={props.onClick}
-      >
+      <button className="square" onClick={props.onClick}>
         {props.value}
       </button>
     );
