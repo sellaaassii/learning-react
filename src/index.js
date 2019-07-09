@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Center from 'react-center';
+import Button from '@material-ui/core/Button';
 
 
 function Square(props) {
@@ -24,7 +25,6 @@ function chooseOnePlayerGame() {
 }
 
 class ChooseNumberOfPlayers extends React.Component {
-
   render() {
     return (
       <div>
@@ -36,7 +36,6 @@ class ChooseNumberOfPlayers extends React.Component {
 }
 
 class ChooseCharacter extends React.Component {
-
   render () {
     return (
       <div>
@@ -48,7 +47,6 @@ class ChooseCharacter extends React.Component {
 }
 
 class Board extends React.Component {
-
   renderSquare(i) {
     return <Square
     value={this.props.squares[i]}
