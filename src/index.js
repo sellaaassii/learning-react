@@ -69,9 +69,9 @@ class ChooseCharacter extends React.Component {
 class Board extends React.Component {
   renderSquare(i) {
     return <Square
-    value={this.props.squares[i]}
-    onClick={() => this.props.onClick(i)}
-    />;
+            value={this.props.squares[i]}
+            onClick={() => this.props.onClick(i)}
+           />;
   }
 
   render() {
@@ -125,6 +125,7 @@ class Game extends React.Component {
       const history = historyAndSquares[0];
       const squares = historyAndSquares[1];
 
+      //dont evaluate if we find a winner or the square clicked already has a value
       if (calculateWinner(squares) || squares[i])
         return;
 
@@ -243,8 +244,6 @@ class Game extends React.Component {
   }
 }
 
-chooseNumberOfPlayers();
-
 function startTwoPlayerGame() {
   ReactDOM.unmountComponentAtNode(document.getElementById('root'));
   ReactDOM.render(
@@ -270,7 +269,7 @@ function chooseNumberOfPlayers() {
 }
 
 function calculateWinner(squares) {
-  //winning combinations
+  //winning tic-tac-toe board combinations
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -289,6 +288,7 @@ function calculateWinner(squares) {
     }
   }
 
+//check if no one has played yet, i.e. it is the beginning of the game
  var hasAllNullValues = squares.every(function (val) {
     return val === null;
   });
@@ -296,10 +296,12 @@ function calculateWinner(squares) {
   if(hasAllNullValues)
     return null;
 
+//check if there is at least one empty spot on the board
   var hasSomeNullValue = squares.some(function (val) {
       return val === null;
   });
 
+//when there is no empty spot and we get here, it is a tie
   if(!hasSomeNullValue)
     return 'T';
 
@@ -376,3 +378,5 @@ var minimax = function(board, player) {
 
   return moves[bestMove];
 }
+
+chooseNumberOfPlayers();
