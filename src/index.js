@@ -27,10 +27,22 @@ function chooseOnePlayerGame() {
 class ChooseNumberOfPlayers extends React.Component {
   render() {
     return (
-      <div>
-        <button className="Oneplayer" onClick={() => chooseOnePlayerGame()}>{"One player"}</button>
-        <button className="Twoplayer" onClick={() => startTwoPlayerGame()}>{"Two player"}</button>
+      <Center>
+      <div className="playerchoice">
+        <div>
+          <h1>{"Welcome to the amazing world of tic-tac-toe!"}</h1>
+          <h3>{"Your adventure awaits..."}</h3>
+        </div>
+        <div className="numplayers">
+          <div className="oneplayer">
+            <Button variant="contained" color="primary" onClick={() => chooseOnePlayerGame()}>{"One player"}</Button>
+          </div>
+          <div className="twoplayer">
+            <Button variant="contained" color="secondary" onClick={() => startTwoPlayerGame()}>{"Two players"}</Button>
+          </div>
+        </div>
       </div>
+      </Center>
     );
   }
 }
@@ -38,10 +50,21 @@ class ChooseNumberOfPlayers extends React.Component {
 class ChooseCharacter extends React.Component {
   render () {
     return (
-      <div>
-        <button className="X" onClick={() => startOnePlayerGame(true)}>{"X"}</button>
-        <button className="O" onClick={() => startOnePlayerGame(false)}>{"O"}</button>
+      <Center>
+      <div className="playerchoice">
+        <div>
+          <h1>{"Choose your weapon!"}</h1>
+        </div>
+        <div className="numplayers">
+          <div className="oneplayer">
+            <Button variant="contained" color="primary" onClick={() => startOnePlayerGame(true)}>{"X"}</Button>
+          </div>
+          <div className="twoplayer">
+            <Button variant="contained" color="secondary" onClick={() => startOnePlayerGame(false)}>{"O"}</Button>
+          </div>
+        </div>
       </div>
+      </Center>
     );
   }
 }
@@ -202,26 +225,20 @@ class Game extends React.Component {
 
     return (
       <Center>
-      <button
-      className="main"
-      onClick={() => chooseNumberOfPlayers()}>
-       {"Main menu"}
+      <button className="main" onClick={() => chooseNumberOfPlayers()}>
+       {"Main Menu"}
       </button>
       <div className="game-info">
-        <div>{this.state.status}</div>
+        <div className="status">{this.state.status}</div>
       </div>
       <div className="reset-button">
-        <button
-        className="reset"
-        onClick={() => this.handleRestartGame()}>
+        <button className="reset" onClick={() => this.handleRestartGame()}>
          {"Restart"}
         </button>
       </div>
       <div className="game">
         <div className="game-board">
-          <Board
-          squares={squares}
-          onClick={(i) => this.handleClick(i)}/>
+          <Board squares={squares} onClick={(i) => this.handleClick(i)}/>
         </div>
       </div>
       </Center>
