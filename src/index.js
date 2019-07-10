@@ -134,7 +134,7 @@ class Game extends React.Component {
       //if it is a two player game, check for winner and change status.
       if (this.state.isTwoPlayerGame) {
         squares[i] = this.state.xIsNext ? 'X': 'O';
-        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+        status = 'Next player: ' + (this.state.xIsNext ? 'O' : 'X');
 
         var winner = calculateWinner(squares);
 
