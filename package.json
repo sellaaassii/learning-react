@@ -37,6 +37,7 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^2.0.1"
+    "gh-pages": "^2.0.1",
+    "lodash.template": ">=4.5.0"
   }
 }
